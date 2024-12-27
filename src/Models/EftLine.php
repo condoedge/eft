@@ -6,8 +6,12 @@ use App\Models\Finance\EftFile;
 use Kompo\Model as KompoModel;
 use App\Models\Teams\Team;
 
-class EftLine extends Model
+class EftLine extends KompoModel
 {
+    public const EFT_STATUS_PENDING = 1;
+    public const EFT_STATUS_SUCCEEDED = 10;
+    public const EFT_STATUS_FAILED = 20;
+
     /* RELATIONSHIPS */
     public function eftFile()
     {

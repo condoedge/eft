@@ -5,7 +5,7 @@ namespace Condoedge\Eft\Models;
 use Kompo\Model as KompoModel;
 use App\Models\Eft\EftLine as EftLine;
 
-class EftFile extends Model
+class EftFile extends KompoModel
 {
     protected $sequencNo = 0;
     protected $totalAmount = 0;

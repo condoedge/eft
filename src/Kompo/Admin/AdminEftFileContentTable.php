@@ -2,7 +2,7 @@
 
 namespace Condoedge\Eft\Kompo\Admin;
 
-use App\Models\Finance\EftLine;
+use App\Models\Eft\EftLine;
 use App\Kompo\Common\Table;
 
 class AdminEftFileContentTable extends Table

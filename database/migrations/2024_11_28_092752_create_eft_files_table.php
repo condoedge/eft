@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('run_date')->nullable();
             $table->datetime('deposited_at')->nullable();
             $table->tinyInteger('test_file')->nullable();
+            $table->tinyInteger('bank_type')->nullable();
             $table->timestamps();
         });
     }

@@ -2,11 +2,13 @@
 
 namespace Condoedge\Eft\Kompo\Admin;
 
-use App\Models\Finance\EftFile;
-use App\Kompo\Common\Table;
+use App\Models\Eft\EftFile;
+use Kompo\Table;
 
 class AdminEftFilesTable extends Table
 {
+    public $containerClass = 'container-fluid';
+
     public function query()
     {
         return EftFile::orderByDesc('run_date')->with('eftLines');
@@ -14,19 +16,24 @@ class AdminEftFilesTable extends Table
 
     public function top()
     {
+        $monitorTable = $this->monitorTable();
+
         return _Rows(
             _FlexBetween(
                 _Html('finance.eft-files')->pageTitle()->class('mb-4'),
-                _Link('Show transfers being loaded next')->toggleId('transfers-to-load-table'),
+                !$monitorTable ? null : 
+                    _Link('Show transfers being loaded next')->toggleId('transfers-to-load-table'),
                 _Button('finance.generate-file')->icon('icon-plus')->outlined()->class('mb-4')
                     ->selfCreate('getGenerateEftFileModal')->inModal()
             ),
-            _Rows(
-                new AdminTransfersTable([
-                    'force_eft_filter' => 1,
-                ])
-            )->class('mb-4')->id('transfers-to-load-table')
+            !$monitorTable ? null : 
+                _Rows($monitorTable)->class('mb-4')->id('transfers-to-load-table')
         );
+    }
+
+    protected function monitorTable()
+    {
+        //To override in app
     }
 
     public function headers()

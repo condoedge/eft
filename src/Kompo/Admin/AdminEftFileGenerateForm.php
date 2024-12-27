@@ -3,7 +3,7 @@
 namespace Condoedge\Eft\Kompo\Admin;
 
 use App\Kompo\Common\Modal;
-use App\Models\Finance\EftFile;
+use App\Models\Eft\EftFile;
 
 class AdminEftFileGenerateForm extends Modal
 {
