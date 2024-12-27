@@ -5,28 +5,20 @@ namespace Condoedge\Eft\Models;
 use Kompo\Model as KompoModel;
 use App\Models\Eft\EftLine as EftLine;
 
-class EftFile extends KompoModel
+abstract class EftFile extends KompoModel
 {
     protected $sequencNo = 0;
     protected $totalAmount = 0;
     protected $totalTransactions = 0;
+
+    public const EFT_CREDIT = 'C';
+    public const EFT_DEBIT = 'D';
 
     /* RELATIONSHIPS */
     public function eftLines()
     {
         return $this->hasMany(EftLine::class);
     }
-    
-    /* ATTRIBUTES */
-    
-
-    /* CALCULATED FIELDS */
-    public function getEftFileContent()
-    {
-        return $this->eftLines()->pluck('record')->implode("\n");
-    }
-
-    
 
     /* SCOPES */
     public function scopeNotTestFile($query)
@@ -37,6 +29,37 @@ class EftFile extends KompoModel
     public function scopeIsTestFile($query)
     {
         $query->where('test_file', 1);
+    }
+    
+
+    /* CALCULATED FIELDS */
+    abstract public function getLinesToInclude();
+
+    abstract protected function getCounterpartyNameFromLine($line);
+
+    abstract protected function getCounterpartyIdFromLine($line);
+
+    abstract protected function getBankFromLine($line);
+
+    abstract protected function getInvoiceFromLine($line);
+
+    abstract protected function getAmountFromLine($line);
+
+    abstract protected function getUniqIdForLine($line);
+
+    public function getEftFileContent()
+    {
+        return $this->eftLines()->pluck('record')->implode("\n");
+    }
+
+    public function isCreditFile()
+    {
+        return $this->credit_or_debit = EftFile::EFT_CREDIT;
+    }
+
+    public function isDebitFile()
+    {
+        return $this->credit_or_debit = EftFile::EFT_DEBIT;
     }
     
 
@@ -75,29 +98,20 @@ class EftFile extends KompoModel
         //Override in app        
     }
 
-    public static function createEftFile($date, $testFile)
+    public function finishSettingUpEft()
     {
-        $file = new EftFile();
-        $file->run_date = $date;
-        $file->test_file = $testFile;
-        $file->filename = $file->getFileName();
-        $file->file_creation_no = $testFile ? '0000' : sprintf("%04d", $file->getMaxFileCreationNo() + 1);
-        $file->save();
+        $this->filename = $this->getFileName();
+        $this->save();
 
-        $file->createEftLinesInDb();
+        $this->createEftLinesInDb();
 
-    }
-
-    public function getLinesToInclude()
-    {
-        return collect(); //Override in app  
     }
 
     public function getFileName()
     {
         $prefix = $this->test_file ? 'tt' : 'tf';
 
-        return $prefix.'03800'.substr(config('eft.user_no'), 0, 5).'.txt';
+        return $prefix.'03800'.substr($this->user_no, 0, 5).'.txt';
     }
 
     public function getMaxFileCreationNo()
@@ -132,10 +146,10 @@ class EftFile extends KompoModel
         $lineArr = [
             'A',
             $this->getSequenceNo(),
-            config('eft.user_no'),
+            $this->user_no,
             $this->file_creation_no,
             $this->makeDateField($this->run_date),
-            config('eft.bank_code'),
+            $this->bank_code,
             str_repeat(' ', 20),
             'CAD',
             str_repeat(' ', 1406),
@@ -146,65 +160,40 @@ class EftFile extends KompoModel
         return $lineArr;
     }
 
-    protected function getCounterpartyFromLine($line)
-    {
-        return; //Override in app
-    }
-
-    protected function getCounterpartyNameFromLine($line)
-    {
-        return; //Override in app
-    }
-
-    protected function getCounterpartyIdFromLine($line)
-    {
-        return; //Override in app
-    }
-
-    protected function getBankFromLine($line)
-    {
-        return; //Override in app
-    }
-
-    protected function getAmountFromLine($line)
-    {
-        return; //Override in app
-    }
-
     protected function createRecord($line)
     {
         $bank = $this->getBankFromLine($line);
-        $lineAmount = $this->getAmountFromLine($line);
+        $invoice = $this->getInvoiceFromLine($line);
 
-        if (!$bank || !$bank->institution || !$bank->branch || !$bank->account_number) {
+        if (!$invoice || !$bank || !$bank->institution || !$bank->branch || !$bank->account_number) {
             return;
         }
 
-        $amount = $this->test_file ? 1 : round($lineAmount * 100);
+        $amount = $this->test_file ? 1 : round($this->getAmountFromLine($line) * 100);
 
         $this->totalAmount += $amount;
         $this->totalTransactions += 1;
 
-        $uniqid = uniqid();
+        $uniqid = $this->getUniqIdForLine($line);
 
         $lineArr = [
-            'C',
+            $this->isCreditFile() ? 'C' : 'D',
             $this->getSequenceNo(),
-            config('eft.user_no').$this->file_creation_no,
-            '430', //Misc. Payments 
+            $this->user_no.$this->file_creation_no,
+            $this->isCreditFile() ? '430' : '450', //Misc. 
             $this->makeNumberField($amount, 10),
             $this->makeDateField($this->run_date),
             $this->getInstitutionBranch($bank->institution, $bank->branch), 
             $this->getAccountNo($bank->account_number),
             str_repeat('0', 22),
             str_repeat('0', 3),
-            $this->sanitizeString(config('eft.user_shortname'), 15),
+            $this->sanitizeString($this->user_shortname, 15),
             $this->sanitizeString($this->getCounterpartyNameFromLine($line), 30),
-            $this->sanitizeString(config('eft.user_longname'), 30),
-            config('eft.user_no'),
+            $this->sanitizeString($this->user_longname, 30),
+            $this->user_no,
             sprintf("%019d", $uniqid),
-            $this->getInstitutionBranch(config('eft.credit_institution'), config('eft.credit_transit')),
-            $this->getAccountNo(config('eft.credit_accountno')),
+            $this->getInstitutionBranch($this->return_institution, $this->return_transit),
+            $this->getAccountNo($this->return_accountno),
             str_repeat(' ', 15), //GENERAL INFORMATION
             str_repeat(' ', 22),
             str_repeat(' ', 2),
@@ -222,11 +211,11 @@ class EftFile extends KompoModel
         $lineArr = [
             'Z',
             $this->getSequenceNo(),
-            config('eft.user_no').$this->file_creation_no,
-            str_repeat('0', 14),
-            str_repeat('0', 8),
-            $this->makeNumberField($this->totalAmount, 14),
-            $this->makeNumberField($this->totalTransactions, 8),
+            $this->user_no.$this->file_creation_no,
+            $this->isCreditFile() ? str_repeat('0', 14) : $this->makeNumberField($this->totalAmount, 14),
+            $this->isCreditFile() ? str_repeat('0', 8) : $this->makeNumberField($this->totalTransactions, 8),
+            $this->isCreditFile() ? $this->makeNumberField($this->totalAmount, 14) : str_repeat('0', 14),
+            $this->isCreditFile() ? $this->makeNumberField($this->totalTransactions, 8) : str_repeat('0', 8),
             str_repeat('0', 14),
             str_repeat('0', 8),
             str_repeat('0', 14),

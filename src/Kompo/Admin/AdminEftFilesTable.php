@@ -20,10 +20,10 @@ class AdminEftFilesTable extends Table
 
         return _Rows(
             _FlexBetween(
-                _Html('finance.eft-files')->pageTitle()->class('mb-4'),
+                _Html('eft-files')->pageTitle()->class('mb-4'),
                 !$monitorTable ? null : 
                     _Link('Show transfers being loaded next')->toggleId('transfers-to-load-table'),
-                _Button('finance.generate-file')->icon('icon-plus')->outlined()->class('mb-4')
+                _Button('eft-create-file')->icon('icon-plus')->outlined()->class('mb-4')
                     ->selfCreate('getGenerateEftFileModal')->inModal()
             ),
             !$monitorTable ? null : 

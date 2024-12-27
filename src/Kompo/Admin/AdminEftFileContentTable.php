@@ -3,7 +3,7 @@
 namespace Condoedge\Eft\Kompo\Admin;
 
 use App\Models\Eft\EftLine;
-use App\Kompo\Common\Table;
+use Kompo\Table;
 
 class AdminEftFileContentTable extends Table
 {
@@ -16,14 +16,13 @@ class AdminEftFileContentTable extends Table
 
     public function query()
     {
-        return EftLine::where('eft_file_id', $this->eftFileId)->with('campaign', 'team');
+        return EftLine::where('eft_file_id', $this->eftFileId)->with('team');
     }
 
     public function headers()
     {
         return [
             _Th('finance.eft-team'),
-            _Th('finance.eft-campaign'),
             _Th('finance.eft-date'),
             _Th('finance.eft-amount'),
             _Th(),
@@ -34,7 +33,6 @@ class AdminEftFileContentTable extends Table
     {
     	return _TableRow(
             _Html($eftLine->team?->name),
-            _Html($eftLine->campaign?->name),
             _Html($eftLine->line_date),
             _Html($eftLine->line_amount),
             _Html($eftLine->record)

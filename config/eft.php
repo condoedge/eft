@@ -7,9 +7,9 @@ return [
 
 	'bank_code' => '12310', //5 characters
 
-	'credit_institution' => '123', //3 characters
-	'credit_transit' => '12345',
-	'credit_accountno' => '1234567',
+	'return_institution' => '123', //3 characters
+	'return_transit' => '12345',
+	'return_accountno' => '1234567',
 
 
 ];
