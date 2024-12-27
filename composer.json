@@ -1,0 +1,24 @@
+{
+    "name": "condoedge/eft",
+    "description": "EFT module for your kompo application",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Condoedge\\Eft\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^7.3|^8.0",
+        "laravel/framework": ">=5.6.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Condoedge\\Eft\\CondoedgeEftServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
