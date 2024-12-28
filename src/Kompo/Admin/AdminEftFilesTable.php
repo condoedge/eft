@@ -39,11 +39,14 @@ class AdminEftFilesTable extends Table
     public function headers()
     {
         return [
+            _Th('eft-file-creation-no'),
             _Th('finance.eft-date'),
             _Th('finance.filename'),
             _Th('finance.number-transfers'),
             _Th('finance.download'),
-            _Th('finance.deposited'),
+            _Th('eft-confirm-deposit'),
+            _Th('eft-confirm-acceptance'),
+            _Th('eft-confirm-completion'),
             _Th(),
         ];
     }
@@ -51,13 +54,25 @@ class AdminEftFilesTable extends Table
     public function render($eftFile)
     {
     	return _TableRow(
+            _Html($eftFile->file_creation_no),
             _Html($eftFile->run_date),
             _Html($eftFile->filename),
             _Html($eftFile->eftLines->count() - 2),
             _Link()->icon('download')->href('eft-file.download', ['id' => $eftFile->id])->inNewTab(),
             $eftFile->deposited_at ?
-                _Html($eftFile->deposited_at)->icon('icon-check') :
-                _Link('Confirm deposit')->selfPost('markDeposited', ['id' => $eftFile->id])->browse(),
+                _Html($eftFile->deposited_at->format('Y-m-d H:i'))->icon('icon-check') :
+                _Button('?')->selfPost('markDeposited', ['id' => $eftFile->id])->browse(),
+            $eftFile->accepted_at ? _Html($eftFile->accepted_at->format('Y-m-d H:i'))->icon('icon-check') : (
+                $eftFile->rejected_at ? _Html($eftFile->rejected_at->format('Y-m-d H:i'))->icon('icon-times') : _Flex2(
+                    _Button()->icon('icon-check')->selfPost('markAccepted', ['id' => $eftFile->id])->browse(),
+                    _Button()->icon('icon-times')->selfPost('markRejected', ['id' => $eftFile->id])->browse(),
+                )
+            ),
+            $eftFile->completed_at ? _Rows(
+                    _Html($eftFile->completed_at->format('Y-m-d H:i'))->icon('icon-check'),
+                    _Currency($eftFile->completed_amount)->class('text-sm text-gray-400'),
+                ) : 
+                _Button('Complete?')->selfUpdate('getCompletionModal', ['id' => $eftFile->id])->inModal(),
             _Delete()->byKey($eftFile),
         )->selfGet('getEftFileContentModal', ['id' => $eftFile->id])->inModal();
     }
@@ -76,5 +91,22 @@ class AdminEftFilesTable extends Table
     {
         $eftFile = EftFile::findOrFail($id);
         $eftFile->markDeposited();
+    }
+
+    public function markAccepted($id)
+    {
+        $eftFile = EftFile::findOrFail($id);
+        $eftFile->markAccepted();
+    }
+
+    public function markRejected($id)
+    {
+        $eftFile = EftFile::findOrFail($id);
+        $eftFile->markRejected();
+    }
+
+    public function getCompletionModal($id)
+    {
+        return new AdminEftCompletionModal($id);
     }
 }

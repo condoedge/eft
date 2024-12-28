@@ -14,6 +14,14 @@ abstract class EftFile extends KompoModel
     public const EFT_CREDIT = 'C';
     public const EFT_DEBIT = 'D';
 
+    protected $casts = [
+        'deposited_at' => 'datetime',
+        'accepted_at' => 'datetime',
+        'rejected_at' => 'datetime',
+        'completed_at' => 'datetime',
+        'completed_date' => 'datetime',
+    ];
+
     /* RELATIONSHIPS */
     public function eftLines()
     {
@@ -87,13 +95,52 @@ abstract class EftFile extends KompoModel
 
     public function markDeposited()
     {
-        $this->notifyReceivers();
-
         $this->deposited_at = now();
         $this->save();
     }
 
+    public function markAccepted()
+    {
+        $this->notifyReceivers(); //We notify when EFT accepted
+
+        $this->accepted_at = now();
+        $this->save();
+    }
+
+    public function markRejected()
+    {
+        $this->releaseNeededLines();
+
+        $this->rejected_at = now();
+        $this->save();
+    }
+
+    public function markCompletedFully($date, $amount)
+    {        
+        $this->completed_portion = 1;
+        $this->markCompleted($date, $amount);
+    }
+
+    public function markCompletedWithRejections($date, $amount)
+    {        
+        $this->completed_portion = 2;
+        $this->markCompleted($date, $amount);
+    }
+
+    public function markCompleted($date, $amount)
+    {        
+        $this->completed_at = now();
+        $this->completed_date = $date;
+        $this->completed_amount = $amount;
+        $this->save();
+    }
+
     public function notifyReceivers()
+    {
+        //Override in app        
+    }
+
+    public function releaseNeededLines()
     {
         //Override in app        
     }
@@ -116,15 +163,7 @@ abstract class EftFile extends KompoModel
 
     public function getMaxFileCreationNo()
     {
-        $query = EftFile::orderByDesc('file_creation_no');
-
-        if ($this->isTestFile()) {
-            $query = $query->isTestFile();
-        } else {
-            $query = $query->notTestFile();
-        }
-
-        return $query->value('file_creation_no');
+        return EftFile::orderByDesc('file_creation_no')->notTestFile()->value('file_creation_no');
     }
 
     public function createEftLinesInDb()

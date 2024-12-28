@@ -35,7 +35,12 @@ class AdminEftFileGenerateForm extends Modal
 		$this->model->return_transit = config('eft.return_transit');
 		$this->model->return_accountno = config('eft.return_accountno');
 		
-        $this->model->file_creation_no = $this->model->test_file ? '0000' : sprintf("%04d", $this->model->getMaxFileCreationNo() + 1);
+        $this->model->file_creation_no = $this->model->test_file ? '0000' : $this->getFileCreationNo();
+	}
+
+	protected function getFileCreationNo()
+	{
+		return request('file_creation_no') ?: sprintf("%04d", $this->model->getMaxFileCreationNo() + 1);
 	}
 
 	public function body()
@@ -43,6 +48,7 @@ class AdminEftFileGenerateForm extends Modal
 		return _Rows(
 			$this->getDateInput(),
 			_Toggle('translate.test-file-question')->name('test_file'),
+			_Input('File creation number')->name('file_creation_no')->default($this->getFileCreationNo()),
 			_SubmitButton('translate.generate-file'),
 		);
 	}
