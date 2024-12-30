@@ -60,12 +60,12 @@ abstract class EftFile extends KompoModel
 
     public function isCreditFile()
     {
-        return $this->credit_or_debit = EftFile::EFT_CREDIT;
+        return $this->credit_or_debit == EftFile::EFT_CREDIT;
     }
 
     public function isDebitFile()
     {
-        return $this->credit_or_debit = EftFile::EFT_DEBIT;
+        return $this->credit_or_debit == EftFile::EFT_DEBIT;
     }
     
 
