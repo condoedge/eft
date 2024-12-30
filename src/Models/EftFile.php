@@ -49,8 +49,6 @@ abstract class EftFile extends KompoModel
 
     abstract protected function getBankFromLine($line);
 
-    abstract protected function getInvoiceFromLine($line);
-
     abstract protected function getAmountFromLine($line);
 
     abstract protected function getUniqIdForLine($line);
@@ -75,9 +73,34 @@ abstract class EftFile extends KompoModel
 
 
     /* ACTIONS */
+    public function preDeleteActions()
+    {
+        //Override in app
+    }
+
+    public function notifyReceivers()
+    {
+        //Override in app        
+    }
+
+    public function releaseNeededLines()
+    {
+        //Override in app        
+    }
+
+    public function runActionsWhenCompleted($completedDate)
+    {
+        //Override in app        
+    }
+
+    public function deletable()
+    {
+        return auth()->user() && !$this->deposited_at && !$this->accepted_at && !$this->rejected_at && !$this->completed_at;
+    }
+
     public function delete()
     {
-        if ($this->deposited_at) {
+        if (!$this->deletable()) {
             abort(403, __('Cannot delete a deposited file'));
         }
         
@@ -86,11 +109,6 @@ abstract class EftFile extends KompoModel
         $this->eftLines()->delete();
 
         parent::delete();
-    }
-
-    public function preDeleteActions()
-    {
-        //Override in app
     }
 
     public function markDeposited()
@@ -116,13 +134,17 @@ abstract class EftFile extends KompoModel
     }
 
     public function markCompletedFully($date, $amount)
-    {        
+    {
+        $this->runActionsWhenCompleted($date);
+
         $this->completed_portion = 1;
         $this->markCompleted($date, $amount);
     }
 
     public function markCompletedWithRejections($date, $amount)
-    {        
+    {
+        $this->runActionsWhenCompleted($date);
+
         $this->completed_portion = 2;
         $this->markCompleted($date, $amount);
     }
@@ -133,16 +155,6 @@ abstract class EftFile extends KompoModel
         $this->completed_date = $date;
         $this->completed_amount = $amount;
         $this->save();
-    }
-
-    public function notifyReceivers()
-    {
-        //Override in app        
-    }
-
-    public function releaseNeededLines()
-    {
-        //Override in app        
     }
 
     public function finishSettingUpEft()
@@ -202,13 +214,16 @@ abstract class EftFile extends KompoModel
     protected function createRecord($line)
     {
         $bank = $this->getBankFromLine($line);
-        $invoice = $this->getInvoiceFromLine($line);
 
-        if (!$invoice || !$bank || !$bank->institution || !$bank->branch || !$bank->account_number) {
+        if (!$bank || !$bank->institution || !$bank->branch || !$bank->account_number) {
             return;
         }
 
         $amount = $this->test_file ? 1 : round($this->getAmountFromLine($line) * 100);
+
+        if ($amount < 1) {
+            return;
+        }
 
         $this->totalAmount += $amount;
         $this->totalTransactions += 1;
@@ -277,6 +292,8 @@ abstract class EftFile extends KompoModel
         $eftLine->line_slug = $uniqid;        
         $eftLine->line_amount = $line ? $this->getAmountFromLine($line) : null;
         $eftLine->team_id = $line ? $this->getCounterpartyIdFromLine($line) : null;
+
+        $eftLine->setCounterparty($line);
 
         $this->eftLines()->save($eftLine);
 

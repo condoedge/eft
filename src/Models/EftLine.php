@@ -22,8 +22,17 @@ class EftLine extends KompoModel
     {
         return $this->belongsTo(Team::class);
     }
+
+    public function counterpartyable()
+    {
+        return $this->morphTo();
+    }
     
     /* ATTRIBUTES */
+    public function getLineDisplayAttribute()
+    {
+        return $this->counterpartyable?->name;
+    }
     
 
     /* CALCULATED FIELDS */
@@ -36,6 +45,11 @@ class EftLine extends KompoModel
 
 
     /* ACTIONS */
+    public function setCounterparty($line)
+    {
+        //Override in app
+    }
+
     public function postCreateActions($line)
     {
         //Override in app

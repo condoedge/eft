@@ -25,11 +25,30 @@ class AdminEftCompletionModal extends Modal
 
 	public function markCompletedFully()
 	{
+		$this->checkAmountIsMatchingCompletedAmount();
+
 		$this->model->markCompletedFully(request('completed_date'), request('completed_amount'));
 	}
 
 	public function markCompletedWithRejections()
 	{
-		$this->model->markCompletedWithRejections(request('completed_date'), request('completed_amount'));		
+		$this->checkAmountIsMatchingCompletedAmount();
+
+		$this->model->markCompletedWithRejections(request('completed_date'), request('completed_amount'));
+	}
+
+	protected function checkAmountIsMatchingCompletedAmount()
+	{
+		if (abs($this->model->eftLines()->whereNull('caused_error')->sum('line_amount') - request('completed_amount')) >= 0.01) {
+			abort(403, __('translate.The completed amount is different than the sum of lines with no errors. Are you sure you marked ALL the errors?'));
+		}	
+	}
+
+	public function rules()
+	{
+		return [
+			'completed_amount' => 'required',
+			'completed_date' => 'required',
+		];
 	}
 }
