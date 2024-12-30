@@ -11,7 +11,7 @@ class AdminEftFilesTable extends Table
 
     public function query()
     {
-        return EftFile::orderByDesc('run_date')->with('eftLines');
+        return EftFile::orderByDesc('run_date')->orderByDesc('file_creation_no')->with('eftLines');
     }
 
     public function top()

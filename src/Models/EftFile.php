@@ -168,9 +168,9 @@ abstract class EftFile extends KompoModel
 
     public function getFileName()
     {
-        $prefix = $this->test_file ? 'tt' : 'tf';
+        $prefix = $this->test_file ? 'test_' : '';
 
-        return $prefix.'03800'.substr($this->user_no, 0, 5).'.txt';
+        return $prefix.carbon($this->run_date)->format('Y_m_d').'-'.$this->file_creation_no.'.txt';
     }
 
     public function getMaxFileCreationNo()

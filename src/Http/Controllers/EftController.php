@@ -3,6 +3,7 @@
 namespace Condoedge\Eft\Http\Controllers;
 
 use App\Models\Eft\EftFile;
+use App\Http\Controllers\Controller;
 
 class EftController extends Controller
 {
