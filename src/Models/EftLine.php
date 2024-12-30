@@ -2,7 +2,7 @@
 
 namespace Condoedge\Eft\Models;
 
-use App\Models\Finance\EftFile;
+use App\Models\Eft\EftFile;
 use Kompo\Model as KompoModel;
 use App\Models\Teams\Team;
 
