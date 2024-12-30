@@ -22,12 +22,12 @@ class AdminEftFileContentTable extends Table
     public function headers()
     {
         return [
-            _Th('eft.counterparty'),
-            _Th('eft.date'),
-            _Th('eft.amount'),
-            _Th('eft.record'),
-            _Th('eft.caused-error?'),
-            _Th('eft.error-reason'),
+            _Th('eft-counterparty'),
+            _Th('eft-date'),
+            _Th('eft-amount'),
+            _Th('eft-record'),
+            _Th('eft-caused-error?'),
+            _Th('eft-error-reason'),
         ];
     }
 

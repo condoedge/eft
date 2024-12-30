@@ -7,18 +7,18 @@ use App\Models\Eft\EftFile;
 
 class AdminEftCompletionModal extends Modal
 {
-	protected $_Title = 'eft.eft-pick-completion';
+	protected $_Title = 'eft-eft-pick-completion';
 
 	public $model = EftFile::class;
 	
 	public function body()
 	{
 		return _Rows(
-			_Date('eft.bank-transaction-date')->name('completed_date'),
-			_InputNumber('eft.completed-amount-confirmation')->name('completed_amount'),
+			_Date('eft-bank-transaction-date')->name('completed_date'),
+			_InputNumber('eft-completed-amount-confirmation')->name('completed_amount'),
 			_FlexBetween(
-				_Button('eft.completed-fully')->submit('markCompletedFully'),
-				_Button('eft.completed-with-rejections')->outlined()->submit('markCompletedWithRejections'),
+				_Button('eft-completed-fully')->submit('markCompletedFully'),
+				_Button('eft-completed-with-rejections')->outlined()->submit('markCompletedWithRejections'),
 			)->class('space-x-4'),
 		);
 	}
@@ -40,7 +40,7 @@ class AdminEftCompletionModal extends Modal
 	protected function checkAmountIsMatchingCompletedAmount()
 	{
 		if (abs($this->model->eftLines()->whereNull('caused_error')->sum('line_amount') - request('completed_amount')) >= 0.01) {
-			abort(403, __('error.eft-completed-amount-is-different-than-the-sum'));
+			abort(403, __('eft-completed-amount-is-different-than-the-sum'));
 		}	
 	}
 

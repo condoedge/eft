@@ -7,7 +7,7 @@ use App\Models\Eft\EftFile;
 
 class AdminEftFileContentModal extends Modal
 {
-	protected $_Title = 'eft.eft-file-content';
+	protected $_Title = 'eft-eft-file-content';
     public $class = 'overflow-y-auto mini-scroll';
     public $style = 'max-height: 95vh';
 
