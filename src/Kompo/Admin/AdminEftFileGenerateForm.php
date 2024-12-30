@@ -7,7 +7,7 @@ use App\Models\Eft\EftFile;
 
 class AdminEftFileGenerateForm extends Modal
 {
-	protected $_Title = 'eft-create-file';
+	protected $_Title = 'eft.create-file';
 
 	public $model = EftFile::class;
 
@@ -47,15 +47,15 @@ class AdminEftFileGenerateForm extends Modal
 	{
 		return _Rows(
 			$this->getDateInput(),
-			_Toggle('translate.test-file-question')->name('test_file'),
-			_Input('File creation number')->name('file_creation_no')->default($this->getFileCreationNo()),
-			_SubmitButton('translate.generate-file'),
+			_Toggle('eft.test-file-question')->name('test_file'),
+			_Input('eft.file-creation-number')->name('file_creation_no')->default($this->getFileCreationNo()),
+			_SubmitButton('eft.generate-file'),
 		);
 	}
 
 	protected function getDateInput()
 	{
-		return _Date('translate.file-date')->name('file_date')->default(date('Y-m-d'));
+		return _Date('eft.file-date')->name('file_date')->default(date('Y-m-d'));
 	}
 
 	public function rules()
