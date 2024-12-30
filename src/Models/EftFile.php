@@ -101,7 +101,7 @@ abstract class EftFile extends KompoModel
     public function delete()
     {
         if (!$this->deletable()) {
-            abort(403, __('Cannot delete a deposited file'));
+            abort(403, __('error.cannot-delete-a-deposited-file'));
         }
         
         $this->preDeleteActions();

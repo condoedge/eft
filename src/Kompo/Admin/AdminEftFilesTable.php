@@ -20,9 +20,9 @@ class AdminEftFilesTable extends Table
 
         return _Rows(
             _FlexBetween(
-                _Html('eft-files')->pageTitle()->class('mb-4'),
+                _Html('eft.eft-files')->pageTitle()->class('mb-4'),
                 !$monitorTable ? null : 
-                    _Link('Show transfers being loaded next')->toggleId('transfers-to-load-table'),
+                    _Link('eft.display-next-transfers')->toggleId('transfers-to-load-table'),
                 _Button('eft-create-file')->icon('icon-plus')->outlined()->class('mb-4')
                     ->selfCreate('getGenerateEftFileModal')->inModal()
             ),
@@ -39,14 +39,14 @@ class AdminEftFilesTable extends Table
     public function headers()
     {
         return [
-            _Th('eft-file-creation-no'),
-            _Th('finance.eft-date'),
-            _Th('finance.filename'),
-            _Th('finance.number-transfers'),
-            _Th('finance.download'),
-            _Th('eft-confirm-deposit'),
-            _Th('eft-confirm-acceptance'),
-            _Th('eft-confirm-completion'),
+            _Th('eft.file-creation-no'),
+            _Th('eft.date'),
+            _Th('eft.filename'),
+            _Th('eft.number-transfers'),
+            _Th('eft.download'),
+            _Th('eft.confirm-transaction'),
+            _Th('eft.confirm-acceptance'),
+            _Th('eft.confirm-completion'),
             _Th(),
         ];
     }
@@ -72,7 +72,7 @@ class AdminEftFilesTable extends Table
                     _Html($eftFile->completed_at->format('Y-m-d H:i'))->icon('icon-check'),
                     _Currency($eftFile->completed_amount)->class('text-sm text-gray-400'),
                 ) : 
-                _Button('Complete?')->selfUpdate('getCompletionModal', ['id' => $eftFile->id])->inModal(),
+                _Button('eft.complete?')->selfUpdate('getCompletionModal', ['id' => $eftFile->id])->inModal(),
             _Delete()->byKey($eftFile),
         )->selfGet('getEftFileContentModal', ['id' => $eftFile->id])->inModal();
     }
