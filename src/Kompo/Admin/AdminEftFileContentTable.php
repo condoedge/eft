@@ -25,7 +25,7 @@ class AdminEftFileContentTable extends Table
             _Th('eft-counterparty'),
             _Th('eft-date'),
             _Th('eft-amount'),
-            _Th('eft-record'),
+            //_Th('eft-record'),
             _Th('eft-caused-error?'),
             _Th('eft-error-reason'),
         ];
@@ -37,9 +37,9 @@ class AdminEftFileContentTable extends Table
             _Html($eftLine->line_display),
             _Html($eftLine->line_date),
             _Html($eftLine->line_amount),
-            _Html($eftLine->record)
+            /*_Html($eftLine->record)
                 ->class('text-xs text-gray-500 w-64 h-8 hover:h-auto overflow-hidden')
-                ->style('word-break: break-all'),
+                ->style('word-break: break-all'),*/
             _Checkbox()->name('caused_error')->selfPost('markCausedError', ['id' => $eftLine->id])
                 ->value($eftLine->caused_error),
             _Input()->name('error_reason')->selfPost('markErrorReason', ['id' => $eftLine->id])
