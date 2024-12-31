@@ -315,7 +315,7 @@ abstract class EftFile extends KompoModel
 
     protected function makeDateField($date)
     {
-        return '0'.carbon($date)->format('y').$this->makeNumberField(carbon($date)->format('z'), 3); //date format 0YYDDD where DDD is the number of days passed this year
+        return '0'.carbon($date)->format('y').$this->makeNumberField(carbon($date)->format('z') + 1, 3); //date format 0YYDDD where DDD is the number of days passed this year
     }
 
     protected function sanitizeString($text, $characters)
