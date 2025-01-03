@@ -103,7 +103,7 @@ class AdminEftFileContentTable extends Table
             $this->labelTotal('Total errors', $e),
             $this->labelTotal('All file', $p + $e)->class('mb-4'),
             $this->eftFile->completed_at ? 
-                _Html($eftFile->completed_at->format('Y-m-d H:i'))->icon('icon-check') : 
+                _Html($this->eftFile->completed_at->format('Y-m-d H:i'))->icon('icon-check') : 
                 _Button('eft-complete?')->selfPost('markEftCompleted')->closeModal()->browse('admin-eft-files-table'),
         )->class('card-gray-100 p-4');
     }
