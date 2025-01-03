@@ -27,14 +27,16 @@ class BankAccountRule implements DataAwareRule, Rule
     ];
     protected $errorMessage;
 
+    protected $institutionLabel;
+
     /**
      * Create a new rule instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($institutionLabel = null)
     {
-        //
+        $this->institutionLabel = $institutionLabel ?: 'institution';
     }
 
     public function setData($data)
@@ -63,7 +65,7 @@ class BankAccountRule implements DataAwareRule, Rule
             return false;
         }
 
-        $institution = $this->data['bnc_institution'] ?? null;
+        $institution = $this->data[$this->institutionLabel] ?? null;
 
         $addRule = static::$institutionAccountRules[$institution] ?? null;
 
