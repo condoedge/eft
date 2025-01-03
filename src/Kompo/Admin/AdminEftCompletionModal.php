@@ -18,30 +18,25 @@ class AdminEftCompletionModal extends Modal
 			_InputNumber('eft-completed-amount-confirmation')->name('completed_amount'),
 			_FlexBetween(
 				_Button('eft-completed-fully')->submit('markCompletedFully'),
-				_Button('eft-completed-with-rejections')->outlined()->submit('markCompletedWithRejections'),
+				_Button('eft-completed-with-rejections')->outlined()->submit('markCompletedWithRejections')->inModal(),
 			)->class('space-x-4'),
 		);
 	}
 
 	public function markCompletedFully()
 	{
-		$this->checkAmountIsMatchingCompletedAmount();
+		$this->model->checkAmountIsMatchingCompletedAmount(request('completed_amount'));
 
 		$this->model->markCompletedFully(request('completed_date'), request('completed_amount'));
 	}
 
 	public function markCompletedWithRejections()
 	{
-		$this->checkAmountIsMatchingCompletedAmount();
-
 		$this->model->markCompletedWithRejections(request('completed_date'), request('completed_amount'));
-	}
 
-	protected function checkAmountIsMatchingCompletedAmount()
-	{
-		if (abs($this->model->eftLines()->whereNull('caused_error')->sum('line_amount') - request('completed_amount')) >= 0.01) {
-			abort(403, __('eft-completed-amount-is-different-than-the-sum'));
-		}	
+		return new AdminEftFileContentTable([
+			'eft_file_id' => $this->model->id,
+		]);
 	}
 
 	public function rules()

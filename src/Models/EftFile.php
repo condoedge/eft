@@ -88,7 +88,7 @@ abstract class EftFile extends KompoModel
         //Override in app        
     }
 
-    public function runActionsWhenCompleted($completedDate)
+    public function runActionsWhenCompleted()
     {
         //Override in app        
     }
@@ -135,26 +135,36 @@ abstract class EftFile extends KompoModel
 
     public function markCompletedFully($date, $amount)
     {
-        $this->runActionsWhenCompleted($date);
-
         $this->completed_portion = 1;
-        $this->markCompleted($date, $amount);
+        $this->markCompletedInfo($date, $amount);
+        $this->markCompleted();
     }
 
     public function markCompletedWithRejections($date, $amount)
     {
-        $this->runActionsWhenCompleted($date);
-
         $this->completed_portion = 2;
-        $this->markCompleted($date, $amount);
+        $this->markCompletedInfo($date, $amount);
+        $this->save();
     }
 
-    public function markCompleted($date, $amount)
+    public function markCompletedInfo($date, $amount)
     {        
-        $this->completed_at = now();
         $this->completed_date = $date;
         $this->completed_amount = $amount;
+    }
+
+    public function markCompleted()
+    {        
+        $this->runActionsWhenCompleted();
+        $this->completed_at = now();
         $this->save();
+    }
+
+    public function checkAmountIsMatchingCompletedAmount($amount)
+    {
+        if (abs($this->eftLines()->linePassing()->sum('line_amount') - $amount) >= 0.01) {
+            abort(403, __('eft-completed-amount-is-different-than-the-sum'));
+        }   
     }
 
     public function finishSettingUpEft()

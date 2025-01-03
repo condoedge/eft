@@ -8,6 +8,7 @@ use Kompo\Table;
 class AdminEftFilesTable extends Table
 {
     public $containerClass = 'container-fluid';
+    public $id = 'admin-eft-files-table';
 
     public function query()
     {
@@ -86,7 +87,9 @@ class AdminEftFilesTable extends Table
 
     public function getEftFileContentModal($id)
     {
-        return new AdminEftFileContentModal($id);
+        return new AdminEftFileContentTable([
+            'eft_file_id' => $id,
+        ]);
     }
 
     public function markDeposited($id)

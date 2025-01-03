@@ -39,6 +39,15 @@ class EftLine extends KompoModel
     
 
     /* SCOPES */
+    public function scopeCausingErrors($query)
+    {
+        $query->where('caused_error', 1);
+    }
+
+    public function scopeLinePassing($query)
+    {
+        $query->where(fn($q) => $q->where('caused_error', 0)->orWhereNull('caused_error'));
+    }
     
 
     /* ELEMENTS */
