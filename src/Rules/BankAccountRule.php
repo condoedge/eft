@@ -22,7 +22,7 @@ class BankAccountRule implements DataAwareRule, Rule
         '540' => 10,
         '614' => 10,
         '623' => 2,
-        '815' => 8,
+        '815' => [7,8],
         '889' => [7,12],
     ];
     protected $errorMessage;
