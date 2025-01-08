@@ -33,6 +33,11 @@ class EftLine extends KompoModel
     {
         return $this->counterpartyable?->name;
     }
+
+    public function getUsedNameAttribute()
+    {
+        return substr($this->record, 104, 30);
+    }
     
 
     /* CALCULATED FIELDS */
