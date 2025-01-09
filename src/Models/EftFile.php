@@ -167,13 +167,35 @@ abstract class EftFile extends KompoModel
         }   
     }
 
-    public function finishSettingUpEft()
+    public function createEftFileWithLines($runDate, $testFile, $fileCreationNo = null, $lines = null)
     {
+        $this->run_date = $runDate;
+        $this->test_file = $testFile;        
+        $this->file_creation_no = $this->test_file ? '0000' : (
+            $fileCreationNo ?: sprintf("%04d", $this->getMaxFileCreationNo() + 1)
+        );
+
+        $this->setEftConfig();
+
         $this->filename = $this->getFileName();
         $this->save();
 
-        $this->createEftLinesInDb();
+        $this->createEftLinesInDb($lines);
+    }
 
+    protected function setEftConfig()
+    {
+        $this->credit_or_debit = EftFile::EFT_CREDIT;
+
+        $this->user_no = config('eft.user_no');
+        $this->user_shortname = config('eft.user_shortname');
+        $this->user_longname = config('eft.user_longname');
+
+        $this->bank_code = config('eft.bank_code');
+
+        $this->return_institution = config('eft.return_institution');
+        $this->return_transit = config('eft.return_transit');
+        $this->return_accountno = config('eft.return_accountno');
     }
 
     public function getFileName()
@@ -188,9 +210,9 @@ abstract class EftFile extends KompoModel
         return EftFile::orderByDesc('file_creation_no')->notTestFile()->value('file_creation_no');
     }
 
-    public function createEftLinesInDb()
+    public function createEftLinesInDb($linesToInclude = null)
     {
-        $linesToInclude = $this->getLinesToInclude();
+        $linesToInclude = $linesToInclude ?: $this->getLinesToInclude();
 
         return collect([$this->createHeader()])
             ->concat(
