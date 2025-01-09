@@ -8,11 +8,14 @@ use Kompo\Table;
 
 class AdminEftFileContentTable extends Table
 {
-    public $class = 'overflow-y-auto mini-scroll';
+    public $itemsWrapperClass = 'overflow-y-auto mini-scroll';
     public $style = 'max-height: 95vh';
+    public $class = 'px-6 table-sm';
 
     protected $eftFileId;
     protected $eftFile;
+
+    public $perPage = 50;
 
     public function created()
     {
@@ -42,6 +45,7 @@ class AdminEftFileContentTable extends Table
         return [
             _Th('eft-counterparty'),
             _Th('eft-date'),
+            _Th('eft-display-name'),
             _Th('eft-amount'),
             //_Th('eft-record'),
             _Th('eft-caused-error?'),
@@ -54,13 +58,16 @@ class AdminEftFileContentTable extends Table
     	return _TableRow(
             _Html($eftLine->line_display),
             _Html($eftLine->line_date),
+            _Html($eftLine->used_name),
             _Html($eftLine->line_amount),
             /*_Html($eftLine->record)
                 ->class('text-xs text-gray-500 w-64 h-8 hover:h-auto overflow-hidden')
                 ->style('word-break: break-all'),*/
-            _Checkbox()->name('caused_error')->selfPost('markCausedError', ['id' => $eftLine->id])->inPanel('eft-content-totals-panel')
+            _Checkbox()->name('caused_error')->class('mb-0')
+                ->selfPost('markCausedError', ['id' => $eftLine->id])->inPanel('eft-content-totals-panel')
                 ->value($eftLine->caused_error),
-            _Input()->name('error_reason')->selfPost('markErrorReason', ['id' => $eftLine->id])->inPanel('eft-content-totals-panel')
+            _Input()->name('error_reason')->class('mb-0')
+                ->selfPost('markErrorReason', ['id' => $eftLine->id])->inPanel('eft-content-totals-panel')
                 ->value($eftLine->error_reason),
         );
     }
