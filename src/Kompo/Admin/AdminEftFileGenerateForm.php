@@ -21,7 +21,7 @@ class AdminEftFileGenerateForm extends Modal
 		return _Rows(
 			$this->getDateInput(),
 			_Toggle('eft-test-file-question')->name('test_file'),
-			_Input('eft-file-creation-number')->name('file_creation_no')->default($this->model->getMaxFileCreationNo() + 1),
+			_Input('eft-file-creation-number')->name('file_creation_no')->default(sprintf("%04d", $this->model->getMaxFileCreationNo() + 1)),
 			_SubmitButton('eft-generate-file'),
 		);
 	}
