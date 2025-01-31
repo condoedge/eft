@@ -21,6 +21,7 @@ class BankInstitutionRule implements Rule
         '614',
         '623',
         '815',
+        '829',
         '889',
     ];
 

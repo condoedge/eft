@@ -1,9 +1,11 @@
 {
 	"eft-amount": "Montant",
 	"eft-bank-transaction-date": "Date de la transaction bancaire",
+	"eft-cannot-delete-a-deposited-file": "Impossible de supprimer un fichier déposé",
 	"eft-caused-error?": "Erreur causée ?",
 	"eft-complete?": "Complet ?",
 	"eft-completed-amount-confirmation": "Confirmation du montant complété",
+	"eft-completed-amount-is-different-than-the-sum": "Le montant complété est différent de la somme des lignes sans erreur. Êtes-vous sûr d'avoir marqué TOUTES les erreurs ?",
 	"eft-completed-fully": "Complété entièrement",
 	"eft-completed-with-rejections": "Complété avec des rejets",
 	"eft-confirm-acceptance": "Confirmer l'acceptation",
@@ -27,7 +29,5 @@
 	"eft-generate-file": "Générer le fichier EFT",
 	"eft-number-transfers": "# Transferts",
 	"eft-record": "Enregistrement",
-	"eft-test-file-question": "Ceci est un fichier TEST",
-	"eft-cannot-delete-a-deposited-file": "Impossible de supprimer un fichier déposé",
-	"eft-completed-amount-is-different-than-the-sum": "Le montant complété est différent de la somme des lignes sans erreur. Êtes-vous sûr d'avoir marqué TOUTES les erreurs ?"
+	"eft-test-file-question": "Ceci est un fichier TEST"
 }
