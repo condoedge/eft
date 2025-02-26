@@ -8,23 +8,6 @@ class BankInstitutionRule implements Rule
 {
     protected $errorMessage;
 
-    protected $acceptedInstitutions = [
-        '001',
-        '002',
-        '003',
-        '004',
-        '006',
-        '010',
-        '016',
-        '030',
-        '540',
-        '614',
-        '623',
-        '815',
-        '829',
-        '889',
-    ];
-
     /**
      * Create a new rule instance.
      *
