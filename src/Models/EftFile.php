@@ -67,6 +67,19 @@ abstract class EftFile extends KompoModel
     {
         return $this->credit_or_debit == EftFile::EFT_DEBIT;
     }
+
+    public function getFileName()
+    {
+        $prefix = ($this->return_institution == '006') ? 'tt_' : '';
+        $prefix .= $this->test_file ? 'test_' : '';
+
+        return $prefix.carbon($this->run_date)->format('Y_m_d').'-'.$this->file_creation_no.'.txt';
+    }
+
+    public function getMaxFileCreationNo()
+    {
+        return EftFile::orderByDesc('file_creation_no')->notTestFile()->value('file_creation_no');
+    }
     
 
     /* ELEMENTS */
@@ -196,18 +209,6 @@ abstract class EftFile extends KompoModel
         $this->return_institution = config('eft.return_institution');
         $this->return_transit = config('eft.return_transit');
         $this->return_accountno = config('eft.return_accountno');
-    }
-
-    public function getFileName()
-    {
-        $prefix = $this->test_file ? 'test_' : '';
-
-        return $prefix.carbon($this->run_date)->format('Y_m_d').'-'.$this->file_creation_no.'.txt';
-    }
-
-    public function getMaxFileCreationNo()
-    {
-        return EftFile::orderByDesc('file_creation_no')->notTestFile()->value('file_creation_no');
     }
 
     public function createEftLinesInDb($linesToInclude = null)
