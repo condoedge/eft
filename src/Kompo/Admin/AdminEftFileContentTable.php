@@ -11,9 +11,11 @@ class AdminEftFileContentTable extends Table
     public $itemsWrapperClass = 'overflow-y-auto mini-scroll';
     public $style = 'max-height: 95vh';
     public $class = 'px-6 table-sm';
+    public $id = 'admin-eft-file-content';
 
     protected $eftFileId;
     protected $eftFile;
+    protected $showCheckboxes;
 
     public $perPage = 50;
 
@@ -21,6 +23,8 @@ class AdminEftFileContentTable extends Table
     {
         $this->eftFileId = $this->prop('eft_file_id');
         $this->eftFile = EftFile::findOrFail($this->eftFileId);
+
+        $this->showCheckboxes = $this->eftFile->accepted_at && !$this->eftFile->completed_at;
     }
 
     public function query()
@@ -32,7 +36,10 @@ class AdminEftFileContentTable extends Table
     {
         return _Rows(
             _FlexBetween(
-                _Html('eft-eft-file-content', null)->class('text-3xl font-semibild'),
+                _Rows(
+                    _Html('eft-eft-file-content', null)->class('text-3xl font-semibild'),
+                    !$this->showCheckboxes ? null : _Button('Add error batch')->config(['withCheckedItemIds' => true])->selfUpdate('markCausedErrorModal')->inModal(),
+                ),
                 _Panel(
                     $this->getEftTotals(),
                 )->id('eft-content-totals-panel'),
@@ -43,19 +50,21 @@ class AdminEftFileContentTable extends Table
     public function headers()
     {
         return [
+            !$this->showCheckboxes ? _Th() : _CheckAllItems()->class('w-8'),
             _Th('eft-counterparty'),
             _Th('eft-date'),
             _Th('eft-display-name'),
             _Th('eft-amount'),
             //_Th('eft-record'),
             _Th('eft-caused-error?'),
-            _Th('eft-error-reason'),
         ];
     }
 
     public function render($eftLine)
     {
     	return _TableRow(
+            !$this->showCheckboxes || !$eftLine->line_amount || $eftLine->caused_error ? _Html() : 
+                _Checkbox()->class('mb-0 child-checkbox')->emit('checkItemId', ['id' => $eftLine->id]),
             _Html($eftLine->line_display),
             _Html($eftLine->line_date),
             _Html($eftLine->used_name),
@@ -63,70 +72,36 @@ class AdminEftFileContentTable extends Table
             /*_Html($eftLine->record)
                 ->class('text-xs text-gray-500 w-64 h-8 hover:h-auto overflow-hidden')
                 ->style('word-break: break-all'),*/
-            _Checkbox()->name('caused_error')->class('mb-0')
-                ->selfPost('markCausedError', ['id' => $eftLine->id])->inPanel('eft-content-totals-panel')
-                ->value($eftLine->caused_error),
-            _Input()->name('error_reason')->class('mb-0')
-                ->selfPost('markErrorReason', ['id' => $eftLine->id])->inPanel('eft-content-totals-panel')
-                ->value($eftLine->error_reason),
+            
+            _Html($eftLine->error_reason)
+                ->class($eftLine->caused_error ? 'text-danger' : ''),
         );
     }
 
-    public function markCausedError($id)
+    public function markCausedErrorModal()
     {
-        $eftLine = EftLine::findOrFail($id);
-        $eftLine->caused_error = request('caused_error') ? 1 : null;
-        $eftLine->save();
-
-        return $this->getEftTotals();
-    }
-
-    public function markErrorReason($id)
-    {
-        $eftLine = EftLine::findOrFail($id);
-        $eftLine->error_reason = request('error_reason');
-        $eftLine->save();
-
-        return $this->getEftTotals();
-    }
-
-    protected function getTotalErrors()
-    {
-        return $this->query()->causingErrors()->sum('line_amount');
-    }
-
-    protected function getTotalPassed()
-    {
-        return $this->query()->linePassing()->sum('line_amount');
+        return new AdminEftLineErrorModal($this->eftFileId, [
+            'eft_line_ids' => request('itemIds'),
+        ]);
     }
 
     public function getEftTotals()
     {
-        $p = $this->getTotalPassed();
-        $e = $this->getTotalErrors();
+        $p = $this->query()->linePassing()->sum('line_amount');
+        $e = $this->query()->causingErrors()->sum('line_amount');
 
         return _Rows(
-            $this->labelTotal('Total passed', $p),
-            $this->labelTotal('Total errors', $e),
-            $this->labelTotal('All file', $p + $e)->class('mb-4'),
+            _LabelTotalsEft('Total passed', $p),
+            _LabelTotalsEft('Total errors', $e),
+            _LabelTotalsEft('All file', $p + $e)->class('mb-4'),
             $this->eftFile->completed_at ? 
                 _Html($this->eftFile->completed_at->format('Y-m-d H:i'))->icon('icon-check') : 
-                _Button('eft-complete?')->selfPost('markEftCompleted')->closeModal()->browse('admin-eft-files-table'),
+                _Button('eft-complete?')->selfUpdate('markEftCompleted')->inModal(),
         )->class('card-gray-100 p-4');
     }
 
     public function markEftCompleted()
     {
-        $this->eftFile->checkAmountIsMatchingCompletedAmount($this->eftFile->completed_amount);
-
-        $this->eftFile->markCompleted();
-    }
-
-    protected function labelTotal($label, $total)
-    {
-        return _FlexBetween(
-            _Html($label)->class('font-semibold'),
-            _Currency($total)->class('ml-2'),
-        );
+        return new AdminEftCompletionModal($this->eftFileId);
     }
 }

@@ -101,6 +101,16 @@ abstract class EftFile extends KompoModel
         //Override in app        
     }
 
+    public function runActionsWhenAccepted()
+    {
+        //Override in app        
+    }
+
+    public function runActionsOnErrorLines($errorLines, $errorAt)
+    {
+        //Override in app        
+    }
+
     public function runActionsWhenCompleted()
     {
         //Override in app        
@@ -130,12 +140,14 @@ abstract class EftFile extends KompoModel
         $this->save();
     }
 
-    public function markAccepted()
+    public function markAccepted($acceptedAt = null)
     {
         $this->notifyReceivers(); //We notify when EFT accepted
 
-        $this->accepted_at = now();
+        $this->accepted_at = $acceptedAt ?: now();
         $this->save();
+
+        $this->runActionsWhenAccepted();
     }
 
     public function markRejected()
@@ -146,31 +158,14 @@ abstract class EftFile extends KompoModel
         $this->save();
     }
 
-    public function markCompletedFully($date, $amount)
+    public function markCompleted($date)
     {
-        $this->completed_portion = 1;
-        $this->markCompletedInfo($date, $amount);
-        $this->markCompleted();
-    }
-
-    public function markCompletedWithRejections($date, $amount)
-    {
-        $this->completed_portion = 2;
-        $this->markCompletedInfo($date, $amount);
-        $this->save();
-    }
-
-    public function markCompletedInfo($date, $amount)
-    {        
         $this->completed_date = $date;
-        $this->completed_amount = $amount;
-    }
-
-    public function markCompleted()
-    {        
-        $this->runActionsWhenCompleted();
+        $this->completed_amount = $this->eftLines()->linePassing()->sum('line_amount');
         $this->completed_at = now();
         $this->save();
+
+        $this->runActionsWhenCompleted();
     }
 
     public function checkAmountIsMatchingCompletedAmount($amount)
@@ -198,7 +193,7 @@ abstract class EftFile extends KompoModel
 
     protected function setEftConfig()
     {
-        $this->credit_or_debit = EftFile::EFT_CREDIT;
+        $this->credit_or_debit = $this->credit_or_debit ?: EftFile::EFT_CREDIT;
 
         $this->user_no = config('eft.user_no');
         $this->user_shortname = config('eft.user_shortname');

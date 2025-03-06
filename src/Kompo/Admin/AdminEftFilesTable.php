@@ -40,6 +40,7 @@ class AdminEftFilesTable extends Table
     public function headers()
     {
         return [
+            _Th('eft-debit-or-credit'),
             _Th('eft-file-creation-no'),
             _Th('eft-date'),
             _Th('eft-filename'),
@@ -56,6 +57,7 @@ class AdminEftFilesTable extends Table
     public function render($eftFile)
     {
     	return _TableRow(
+            _Html($eftFile->credit_or_debit),
             _Html($eftFile->file_creation_no),
             _Html($eftFile->run_date),
             _Html($eftFile->filename),
@@ -67,7 +69,7 @@ class AdminEftFilesTable extends Table
                 _Button('?')->selfPost('markDeposited', ['id' => $eftFile->id])->browse(),
             $eftFile->accepted_at ? _Html($eftFile->accepted_at->format('Y-m-d H:i'))->icon('icon-check') : (
                 $eftFile->rejected_at ? _Html($eftFile->rejected_at->format('Y-m-d H:i'))->icon('icon-times') : _Flex2(
-                    _Button()->icon('icon-check')->selfPost('markAccepted', ['id' => $eftFile->id])->browse(),
+                    _Button()->icon('icon-check')->selfUpdate('getAcceptationModal', ['id' => $eftFile->id])->inModal(),
                     _Button()->icon('icon-times')->selfPost('markRejected', ['id' => $eftFile->id])->browse(),
                 )
             ),
@@ -98,10 +100,9 @@ class AdminEftFilesTable extends Table
         $eftFile->markDeposited();
     }
 
-    public function markAccepted($id)
+    public function getAcceptationModal($id)
     {
-        $eftFile = EftFile::findOrFail($id);
-        $eftFile->markAccepted();
+        return new AdminEftAcceptedModal($id);
     }
 
     public function markRejected($id)
@@ -112,6 +113,8 @@ class AdminEftFilesTable extends Table
 
     public function getCompletionModal($id)
     {
-        return new AdminEftCompletionModal($id);
+        return new AdminEftFileContentTable([
+            'eft_file_id' => $id,
+        ]);
     }
 }
