@@ -43,6 +43,11 @@ abstract class EftFile extends KompoModel
     /* CALCULATED FIELDS */
     abstract public function getLinesToInclude();
 
+    public function getCurrentEftLines()
+    {
+        return collect();
+    }
+
     abstract protected function getCounterpartyNameFromLine($line);
 
     abstract protected function getCounterpartyIdFromLine($line);
@@ -187,6 +192,12 @@ abstract class EftFile extends KompoModel
 
         $this->filename = $this->getFileName();
         $this->save();
+
+        if ($lines && $this->eftLines()->count()) {
+            $lines = $this->getCurrentEftLines()->concat($lines);
+            $this->releaseNeededLines();
+            $this->eftLines()->delete();
+        }
 
         $this->createEftLinesInDb($lines);
     }
