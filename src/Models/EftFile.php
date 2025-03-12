@@ -210,11 +210,21 @@ abstract class EftFile extends KompoModel
         $this->user_shortname = config('eft.user_shortname');
         $this->user_longname = config('eft.user_longname');
 
-        $this->bank_code = config('eft.bank_code');
-
         $this->return_institution = config('eft.return_institution');
         $this->return_transit = config('eft.return_transit');
         $this->return_accountno = config('eft.return_accountno');
+
+        $this->setBankCode();
+    }
+
+    protected function setBankCode()
+    {
+        $this->bank_code = $this->getBankCode();
+    }
+
+    protected function getBankCode()
+    {
+        return $this->return_institution.'10';
     }
 
     public function createEftLinesInDb($linesToInclude = null)
