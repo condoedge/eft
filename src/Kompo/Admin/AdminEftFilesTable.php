@@ -78,7 +78,7 @@ class AdminEftFilesTable extends Table
                     _Currency($eftFile->completed_amount)->class('text-sm text-gray-400'),
                 ) : 
                 _Button('eft-complete?')->selfUpdate('getCompletionModal', ['id' => $eftFile->id])->inModal(),
-            _Delete()->byKey($eftFile),
+            _Delete($eftFile),
         )->selfGet('getEftFileContentModal', ['id' => $eftFile->id])->inModal();
     }
 
