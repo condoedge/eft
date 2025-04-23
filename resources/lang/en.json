@@ -1,4 +1,5 @@
 {
+	"eft-all-file": "Total file",
 	"eft-amount": "Amount",
 	"eft-bank-transaction-date": "Bank transaction date",
 	"eft-cannot-delete-a-deposited-file": "Cannot delete a deposited file",
@@ -29,5 +30,7 @@
 	"eft-generate-file": "Generate EFT file",
 	"eft-number-transfers": "# Transfers",
 	"eft-record": "Record",
-	"eft-test-file-question": "This is a TEST file"
+	"eft-test-file-question": "This is a TEST file",
+	"eft-total-errors": "Total errors",
+	"eft-total-passed": "Total passed"
 }

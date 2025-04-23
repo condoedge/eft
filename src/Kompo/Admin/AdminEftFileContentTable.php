@@ -46,7 +46,7 @@ class AdminEftFileContentTable extends Table
             _Th('eft-counterparty'),
             _Th('eft-date'),
             _Th('eft-display-name'),
-            _Th('eft-amount'),
+            _Th('eft-amount')->class('text-right'),
             //_Th('eft-record'),
             _Th('eft-caused-error?'),
             _Th('eft-error-reason'),
@@ -59,7 +59,7 @@ class AdminEftFileContentTable extends Table
             _Html($eftLine->line_display),
             _Html($eftLine->line_date),
             _Html($eftLine->used_name),
-            _Html($eftLine->line_amount),
+            _Currency($eftLine->line_amount)->class('text-right'),
             /*_Html($eftLine->record)
                 ->class('text-xs text-gray-500 w-64 h-8 hover:h-auto overflow-hidden')
                 ->style('word-break: break-all'),*/
@@ -106,9 +106,9 @@ class AdminEftFileContentTable extends Table
         $e = $this->getTotalErrors();
 
         return _Rows(
-            $this->labelTotal('Total passed', $p),
-            $this->labelTotal('Total errors', $e),
-            $this->labelTotal('All file', $p + $e)->class('mb-4'),
+            $this->labelTotal('eft-total-passed', $p),
+            $this->labelTotal('eft-total-errors', $e),
+            $this->labelTotal('eft-all-file', $p + $e)->class('mb-4'),
             $this->eftFile->completed_at ? 
                 _Html($this->eftFile->completed_at->format('Y-m-d H:i'))->icon('icon-check') : 
                 _Button('eft-complete?')->selfPost('markEftCompleted')->closeModal()->browse('admin-eft-files-table'),
