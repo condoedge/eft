@@ -22,10 +22,12 @@ class AdminEftFilesTable extends Table
         return _Rows(
             _FlexBetween(
                 _Html('eft-eft-files')->pageTitle()->class('mb-4'),
-                !$monitorTable ? null : 
-                    _Link('eft-display-next-transfers')->toggleId('transfers-to-load-table'),
-                _Button('eft-create-file')->icon('icon-plus')->outlined()->class('mb-4')
-                    ->selfCreate('getGenerateEftFileModal')->inModal()
+                _Flex4(
+                    !$monitorTable ? null : 
+                        _Button('eft-display-next-transfers')->outlined()->toggleId('transfers-to-load-table'),
+                        _Button('eft-create-file')->icon(_sax('add',18))
+                            ->selfCreate('getGenerateEftFileModal')->inModal()
+                )->class('mb-4'),
             ),
             !$monitorTable ? null : 
                 _Rows($monitorTable)->class('mb-4')->id('transfers-to-load-table')
@@ -65,17 +67,17 @@ class AdminEftFilesTable extends Table
             _Currency($eftFile->eftLines->sum('line_amount')),
             _Link()->icon('download')->href('eft-file.download', ['id' => $eftFile->id])->inNewTab(),
             $eftFile->deposited_at ?
-                _Html($eftFile->deposited_at->format('Y-m-d H:i'))->icon('icon-check') :
+                _Html($eftFile->deposited_at->format('Y-m-d H:i')) :
                 _Button('?')->selfPost('markDeposited', ['id' => $eftFile->id])->browse(),
-            $eftFile->accepted_at ? _Html($eftFile->accepted_at->format('Y-m-d H:i'))->icon('icon-check') : (
+            $eftFile->accepted_at ? _Html($eftFile->accepted_at->format('Y-m-d H:i')) : (
                 $eftFile->rejected_at ? _Html($eftFile->rejected_at->format('Y-m-d H:i'))->icon('icon-times') : _Flex2(
                     _Button()->icon('icon-check')->selfUpdate('getAcceptationModal', ['id' => $eftFile->id])->inModal(),
                     _Button()->icon('icon-times')->selfPost('markRejected', ['id' => $eftFile->id])->browse(),
                 )
             ),
             $eftFile->completed_at ? _Rows(
-                    _Html($eftFile->completed_at->format('Y-m-d H:i'))->icon('icon-check'),
-                    _Currency($eftFile->completed_amount)->class('text-sm text-gray-400'),
+                    _Html($eftFile->completed_at->format('Y-m-d H:i')),
+                    _Currency($eftFile->completed_amount)->class('text-sm font-bold'),
                 ) : 
                 _Button('eft-complete?')->selfUpdate('getCompletionModal', ['id' => $eftFile->id])->inModal(),
             _Delete($eftFile),

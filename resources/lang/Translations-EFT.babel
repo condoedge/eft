@@ -20,6 +20,21 @@
 				<name>eft</name>
 				<children>
 					<concept_node>
+						<name>eft-add-error-batch</name>
+						<description/>
+						<comment/>
+						<translations>
+							<translation>
+								<language>en-US</language>
+								<approved>false</approved>
+							</translation>
+							<translation>
+								<language>fr-FR</language>
+								<approved>false</approved>
+							</translation>
+						</translations>
+					</concept_node>
+					<concept_node>
 						<name>eft-all-file</name>
 						<description/>
 						<comment/>
@@ -126,6 +141,21 @@
 					</concept_node>
 					<concept_node>
 						<name>eft-completed-amount-is-different-than-the-sum</name>
+						<description/>
+						<comment/>
+						<translations>
+							<translation>
+								<language>en-US</language>
+								<approved>false</approved>
+							</translation>
+							<translation>
+								<language>fr-FR</language>
+								<approved>false</approved>
+							</translation>
+						</translations>
+					</concept_node>
+					<concept_node>
+						<name>eft-completed-at</name>
 						<description/>
 						<comment/>
 						<translations>
@@ -261,6 +291,21 @@
 					</concept_node>
 					<concept_node>
 						<name>eft-date</name>
+						<description/>
+						<comment/>
+						<translations>
+							<translation>
+								<language>en-US</language>
+								<approved>false</approved>
+							</translation>
+							<translation>
+								<language>fr-FR</language>
+								<approved>false</approved>
+							</translation>
+						</translations>
+					</concept_node>
+					<concept_node>
+						<name>eft-debit-or-credit</name>
 						<description/>
 						<comment/>
 						<translations>

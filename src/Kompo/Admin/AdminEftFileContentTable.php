@@ -9,8 +9,8 @@ use Kompo\Table;
 class AdminEftFileContentTable extends Table
 {
     public $itemsWrapperClass = 'overflow-y-auto mini-scroll';
-    public $style = 'max-height: 95vh';
-    public $class = 'px-6 table-sm';
+    public $style = 'max-height: 95vh; width: 95vw';
+    public $class = 'table-sm max-w-6xl';
     public $id = 'admin-eft-file-content';
 
     protected $eftFileId;
@@ -35,15 +35,15 @@ class AdminEftFileContentTable extends Table
     public function top()
     {
         return _Rows(
-            _FlexBetween(
+            _Columns(
                 _Rows(
-                    _Html('eft-eft-file-content', null)->class('text-3xl font-semibild'),
-                    !$this->showCheckboxes ? null : _Button('Add error batch')->config(['withCheckedItemIds' => true])->selfUpdate('markCausedErrorModal')->inModal(),
+                    _Html('eft-eft-file-content', null)->class('text-2xl font-semibold'),
+                    !$this->showCheckboxes ? null : _Button('eft-add-error-batch')->config(['withCheckedItemIds' => true])->selfUpdate('markCausedErrorModal')->inModal(),
                 ),
                 _Panel(
                     $this->getEftTotals(),
                 )->id('eft-content-totals-panel'),
-            )->class('p-6'),
+            )->class('p-6 items-top'),
         );
     }
 
@@ -91,11 +91,14 @@ class AdminEftFileContentTable extends Table
         $e = $this->query()->causingErrors()->sum('line_amount');
 
         return _Rows(
-            _LabelTotalsEft('Total passed', $p),
-            _LabelTotalsEft('Total errors', $e),
-            _LabelTotalsEft('All file', $p + $e)->class('mb-4'),
+            _LabelTotalsEft('eft-total-passed', $p),
+            _LabelTotalsEft('eft-total-errors', $e),
+            _LabelTotalsEft('eft-all-file', $p + $e)->class('mb-6'),
             $this->eftFile->completed_at ? 
-                _Html($this->eftFile->completed_at->format('Y-m-d H:i'))->icon('icon-check') : 
+                _FlexBetween(
+                    _Html('eft-completed-at'),
+                    _Html($this->eftFile->completed_at->format('Y-m-d H:i'))->class('font-semibold')
+                ) : 
                 _Button('eft-complete?')->selfUpdate('markEftCompleted')->inModal(),
         )->class('card-gray-100 p-4');
     }
