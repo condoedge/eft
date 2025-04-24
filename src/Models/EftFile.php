@@ -43,6 +43,11 @@ abstract class EftFile extends KompoModel
     /* CALCULATED FIELDS */
     abstract public function getLinesToInclude();
 
+    public function getCurrentEftLines()
+    {
+        return collect();
+    }
+
     abstract protected function getCounterpartyNameFromLine($line);
 
     abstract protected function getCounterpartyIdFromLine($line);
@@ -67,6 +72,19 @@ abstract class EftFile extends KompoModel
     {
         return $this->credit_or_debit == EftFile::EFT_DEBIT;
     }
+
+    public function getFileName()
+    {
+        $prefix = ($this->return_institution == '006') ? 'tt_' : '';
+        $prefix .= $this->test_file ? 'test_' : '';
+
+        return $prefix.carbon($this->run_date)->format('Y_m_d').'-'.$this->file_creation_no.'.txt';
+    }
+
+    public function getMaxFileCreationNo()
+    {
+        return EftFile::orderByDesc('file_creation_no')->notTestFile()->value('file_creation_no');
+    }
     
 
     /* ELEMENTS */
@@ -84,6 +102,16 @@ abstract class EftFile extends KompoModel
     }
 
     public function releaseNeededLines()
+    {
+        //Override in app        
+    }
+
+    public function runActionsWhenAccepted()
+    {
+        //Override in app        
+    }
+
+    public function runActionsOnErrorLines($errorLines, $errorAt)
     {
         //Override in app        
     }
@@ -117,12 +145,14 @@ abstract class EftFile extends KompoModel
         $this->save();
     }
 
-    public function markAccepted()
+    public function markAccepted($acceptedAt = null)
     {
         $this->notifyReceivers(); //We notify when EFT accepted
 
-        $this->accepted_at = now();
+        $this->accepted_at = $acceptedAt ?: now();
         $this->save();
+
+        $this->runActionsWhenAccepted();
     }
 
     public function markRejected()
@@ -133,31 +163,14 @@ abstract class EftFile extends KompoModel
         $this->save();
     }
 
-    public function markCompletedFully($date, $amount)
+    public function markCompleted($date)
     {
-        $this->completed_portion = 1;
-        $this->markCompletedInfo($date, $amount);
-        $this->markCompleted();
-    }
-
-    public function markCompletedWithRejections($date, $amount)
-    {
-        $this->completed_portion = 2;
-        $this->markCompletedInfo($date, $amount);
-        $this->save();
-    }
-
-    public function markCompletedInfo($date, $amount)
-    {        
         $this->completed_date = $date;
-        $this->completed_amount = $amount;
-    }
-
-    public function markCompleted()
-    {        
-        $this->runActionsWhenCompleted();
+        $this->completed_amount = $this->eftLines()->linePassing()->sum('line_amount');
         $this->completed_at = now();
         $this->save();
+
+        $this->runActionsWhenCompleted();
     }
 
     public function checkAmountIsMatchingCompletedAmount($amount)
@@ -180,34 +193,38 @@ abstract class EftFile extends KompoModel
         $this->filename = $this->getFileName();
         $this->save();
 
+        if ($lines && $this->eftLines()->count()) {
+            $lines = $this->getCurrentEftLines()->concat($lines);
+            $this->releaseNeededLines();
+            $this->eftLines()->delete();
+        }
+
         $this->createEftLinesInDb($lines);
     }
 
     protected function setEftConfig()
     {
-        $this->credit_or_debit = EftFile::EFT_CREDIT;
+        $this->credit_or_debit = $this->credit_or_debit ?: EftFile::EFT_CREDIT;
 
         $this->user_no = config('eft.user_no');
         $this->user_shortname = config('eft.user_shortname');
         $this->user_longname = config('eft.user_longname');
 
-        $this->bank_code = config('eft.bank_code');
-
         $this->return_institution = config('eft.return_institution');
         $this->return_transit = config('eft.return_transit');
         $this->return_accountno = config('eft.return_accountno');
+
+        $this->setBankCode();
     }
 
-    public function getFileName()
+    protected function setBankCode()
     {
-        $prefix = $this->test_file ? 'test_' : '';
-
-        return $prefix.carbon($this->run_date)->format('Y_m_d').'-'.$this->file_creation_no.'.txt';
+        $this->bank_code = $this->getBankCode();
     }
 
-    public function getMaxFileCreationNo()
+    protected function getBankCode()
     {
-        return EftFile::orderByDesc('file_creation_no')->notTestFile()->value('file_creation_no');
+        return $this->return_institution.'10';
     }
 
     public function createEftLinesInDb($linesToInclude = null)
