@@ -106,6 +106,11 @@ abstract class EftFile extends KompoModel
         //Override in app        
     }
 
+    public function runActionsWhenDeposited()
+    {
+        //Override in app        
+    }
+
     public function runActionsWhenAccepted()
     {
         //Override in app        
@@ -143,6 +148,8 @@ abstract class EftFile extends KompoModel
     {
         $this->deposited_at = now();
         $this->save();
+
+        $this->runActionsWhenDeposited();
     }
 
     public function markAccepted($acceptedAt = null)
