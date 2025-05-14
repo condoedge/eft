@@ -1,4 +1,6 @@
 {
+	"eft-add-error-batch": "Add error batch",
+	"eft-all-file": "Total file",
 	"eft-amount": "Amount",
 	"eft-bank-transaction-date": "Bank transaction date",
 	"eft-cannot-delete-a-deposited-file": "Cannot delete a deposited file",
@@ -6,6 +8,7 @@
 	"eft-complete?": "Complete ?",
 	"eft-completed-amount-confirmation": "Completed amount confirmation",
 	"eft-completed-amount-is-different-than-the-sum": "The completed amount is different than the sum of lines with no errors. Are you sure you marked ALL the errors?",
+	"eft-completed-at": "Completed at",
 	"eft-completed-fully": "Completed fully",
 	"eft-completed-with-rejections": "Completed with rejections",
 	"eft-confirm-acceptance": "Confirm acceptance",
@@ -15,6 +18,7 @@
 	"eft-counterparty": "Counterparty",
 	"eft-create-file": "Create EFT file",
 	"eft-date": "Date",
+	"eft-debit-or-credit": "Debit / Credit",
 	"eft-display-name": "Display name",
 	"eft-display-next-transfers": "Display next transfers",
 	"eft-download": "Download",
@@ -29,5 +33,7 @@
 	"eft-generate-file": "Generate EFT file",
 	"eft-number-transfers": "# Transfers",
 	"eft-record": "Record",
-	"eft-test-file-question": "This is a TEST file"
+	"eft-test-file-question": "This is a TEST file",
+	"eft-total-errors": "Total errors",
+	"eft-total-passed": "Total passed"
 }

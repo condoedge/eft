@@ -1,4 +1,6 @@
 {
+	"eft-add-error-batch": "Ajouter un lot d’erreurs",
+	"eft-all-file": "Total du fichier",
 	"eft-amount": "Montant",
 	"eft-bank-transaction-date": "Date de la transaction bancaire",
 	"eft-cannot-delete-a-deposited-file": "Impossible de supprimer un fichier déposé",
@@ -6,6 +8,7 @@
 	"eft-complete?": "Complet ?",
 	"eft-completed-amount-confirmation": "Confirmation du montant complété",
 	"eft-completed-amount-is-different-than-the-sum": "Le montant complété est différent de la somme des lignes sans erreur. Êtes-vous sûr d'avoir marqué TOUTES les erreurs ?",
+	"eft-completed-at": "Complété le",
 	"eft-completed-fully": "Complété entièrement",
 	"eft-completed-with-rejections": "Complété avec des rejets",
 	"eft-confirm-acceptance": "Confirmer l'acceptation",
@@ -15,6 +18,7 @@
 	"eft-counterparty": "Contrepartie",
 	"eft-create-file": "Créer le fichier EFT",
 	"eft-date": "Date",
+	"eft-debit-or-credit": "Débit / Crédit",
 	"eft-display-name": "Nom affiché",
 	"eft-display-next-transfers": "Afficher les prochains transferts",
 	"eft-download": "Télécharger",
@@ -29,5 +33,7 @@
 	"eft-generate-file": "Générer le fichier EFT",
 	"eft-number-transfers": "# Transferts",
 	"eft-record": "Enregistrement",
-	"eft-test-file-question": "Ceci est un fichier TEST"
+	"eft-test-file-question": "Ceci est un fichier TEST",
+	"eft-total-errors": "Total en erreur",
+	"eft-total-passed": "Total réussis"
 }
