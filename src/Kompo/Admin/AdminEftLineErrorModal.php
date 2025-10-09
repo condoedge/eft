@@ -25,6 +25,8 @@ class AdminEftLineErrorModal extends Modal
 		$this->eftLines->each(function ($eftLine) {
 			$eftLine->caused_error = 1;
 			$eftLine->error_reason = request('error_reason');
+			$eftLine->error_option = request('error_option');
+			$eftLine->error_code = request('error_code');
 			$eftLine->save();
 		});
 	}
@@ -39,6 +41,8 @@ class AdminEftLineErrorModal extends Modal
 
 			_Date('eft-error-date')->name('error_at'),
 			_Input('eft-error-reason')->name('error_reason'),
+			_ButtonGroup()->name('error_option')->options(EftLine::errorOptions())->optionClass('p-4 text-center cursor-pointer'),
+			_Input('eft-error-code')->name('error_code'),
 			_SubmitButton()->refresh('admin-eft-file-content'),
 		);
 	}

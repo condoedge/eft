@@ -8,9 +8,13 @@ use App\Models\Teams\Team;
 
 class EftLine extends KompoModel
 {
+     //EFT statuses not used anywhere yet
     public const EFT_STATUS_PENDING = 1;
     public const EFT_STATUS_SUCCEEDED = 10;
     public const EFT_STATUS_FAILED = 20;
+
+    public const ERROR_OPTION_REJECT = 1;
+    public const ERROR_OPTION_RETURN = 2;
 
     /* RELATIONSHIPS */
     public function eftFile()
@@ -41,6 +45,13 @@ class EftLine extends KompoModel
     
 
     /* CALCULATED FIELDS */
+    public static function errorOptions()
+    {
+        return [
+            static::ERROR_OPTION_REJECT => __('eft-rejected'),
+            static::ERROR_OPTION_RETURN => __('eft-returned'),
+        ];
+    }
     
 
     /* SCOPES */
