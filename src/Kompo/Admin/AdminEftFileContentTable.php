@@ -66,7 +66,7 @@ class AdminEftFileContentTable extends Table
             !$this->showCheckboxes || !$eftLine->line_amount || $eftLine->caused_error ? _Html() : 
                 _Checkbox()->class('mb-0 child-checkbox')->emit('checkItemId', ['id' => $eftLine->id]),
             _Html($eftLine->line_display),
-            _Html($eftLine->line_date),
+            _Html($eftLine->line_date)->class('whitespace-nowrap'),
             _Html($eftLine->used_name),
             _Currency($eftLine->line_amount)->class('text-right'),
             /*_Html($eftLine->record)
