@@ -35,5 +35,7 @@
 	"eft-record": "Enregistrement",
 	"eft-test-file-question": "Ceci est un fichier TEST",
 	"eft-total-errors": "Total en erreur",
-	"eft-total-passed": "Total réussis"
+	"eft-total-passed": "Total réussis",
+	"eft-rejected": "Rejeté",
+	"eft-returned": "Retourné"
 }
