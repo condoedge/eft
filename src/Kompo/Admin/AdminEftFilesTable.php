@@ -10,6 +10,8 @@ class AdminEftFilesTable extends Table
     public $containerClass = 'container-fluid';
     public $id = 'admin-eft-files-table';
 
+    protected $tableTitle = 'eft-eft-files';
+
     public function query()
     {
         return EftFile::orderByDesc('file_creation_no')->with('eftLines');
@@ -21,7 +23,7 @@ class AdminEftFilesTable extends Table
 
         return _Rows(
             _FlexBetween(
-                _Html('eft-eft-files')->pageTitle()->class('mb-4'),
+                _Html($this->tableTitle)->pageTitle()->class('mb-4'),
                 _Flex4(
                     !$monitorTable ? null : 
                         _Button('eft-display-next-transfers')->outlined()->toggleId('transfers-to-load-table'),
