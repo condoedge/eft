@@ -24,6 +24,8 @@ class CondoedgeEftServiceProvider extends ServiceProvider
 
         $this->loadJSONTranslationsFrom(__DIR__.'/../resources/lang');
 
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'eft');
+
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
         $this->loadConfig();

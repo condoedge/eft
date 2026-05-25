@@ -2,8 +2,8 @@
 
 namespace Condoedge\Eft\Kompo\Admin;
 
-use App\Models\Eft\EftLine;
 use App\Models\Eft\EftFile;
+use App\Models\Eft\EftLine;
 use Kompo\Table;
 
 class AdminEftFileContentTable extends Table
@@ -22,14 +22,14 @@ class AdminEftFileContentTable extends Table
     public function created()
     {
         $this->eftFileId = $this->prop('eft_file_id');
-        $this->eftFile = EftFile::findOrFail($this->eftFileId);
+        $this->eftFile = $this->eftFileModel()::findOrFail($this->eftFileId);
 
         $this->showCheckboxes = $this->eftFile->accepted_at && !$this->eftFile->completed_at;
     }
 
     public function query()
     {
-        return EftLine::where('eft_file_id', $this->eftFileId)->with('team');
+        return $this->eftLineModel()::where('eft_file_id', $this->eftFileId)->with($this->lineEagerLoad());
     }
 
     public function top()
@@ -55,24 +55,19 @@ class AdminEftFileContentTable extends Table
             _Th('eft-date'),
             _Th('eft-display-name'),
             _Th('eft-amount')->class('text-right'),
-            //_Th('eft-record'),
             _Th('eft-caused-error?'),
         ];
     }
 
     public function render($eftLine)
     {
-    	return _TableRow(
-            !$this->showCheckboxes || !$eftLine->line_amount || $eftLine->caused_error ? _Html() : 
+        return _TableRow(
+            !$this->showCheckboxes || !$eftLine->line_amount || $eftLine->caused_error ? _Html() :
                 _Checkbox()->class('mb-0 child-checkbox')->emit('checkItemId', ['id' => $eftLine->id]),
             _Html($eftLine->line_display),
             _Html($eftLine->line_date)->class('whitespace-nowrap'),
             _Html($eftLine->used_name),
             _Currency($eftLine->line_amount)->class('text-right'),
-            /*_Html($eftLine->record)
-                ->class('text-xs text-gray-500 w-64 h-8 hover:h-auto overflow-hidden')
-                ->style('word-break: break-all'),*/
-            
             _Html($eftLine->error_reason)
                 ->class($eftLine->caused_error ? 'text-danger' : ''),
         );
@@ -80,7 +75,9 @@ class AdminEftFileContentTable extends Table
 
     public function markCausedErrorModal()
     {
-        return new AdminEftLineErrorModal($this->eftFileId, [
+        $class = $this->errorModal();
+
+        return new $class($this->eftFileId, [
             'eft_line_ids' => request('itemIds'),
         ]);
     }
@@ -94,17 +91,46 @@ class AdminEftFileContentTable extends Table
             _LabelTotalsEft('eft-total-passed', $p),
             _LabelTotalsEft('eft-total-errors', $e),
             _LabelTotalsEft('eft-all-file', $p + $e)->class('mb-6'),
-            $this->eftFile->completed_at ? 
+            $this->eftFile->completed_at ?
                 _FlexBetween(
                     _Html('eft-completed-at'),
                     _Html($this->eftFile->completed_at->format('Y-m-d H:i'))->class('font-semibold')
-                ) : 
+                ) :
                 _Button('eft-complete?')->selfUpdate('markEftCompleted')->inModal(),
         )->class('card-gray-100 p-4');
     }
 
     public function markEftCompleted()
     {
-        return new AdminEftCompletionModal($this->eftFileId);
+        $class = $this->completionModal();
+
+        return new $class($this->eftFileId);
+    }
+
+    /* HOOKS */
+
+    protected function eftFileModel(): string
+    {
+        return EftFile::class;
+    }
+
+    protected function eftLineModel(): string
+    {
+        return EftLine::class;
+    }
+
+    protected function lineEagerLoad(): array
+    {
+        return ['team'];
+    }
+
+    protected function errorModal(): string
+    {
+        return AdminEftLineErrorModal::class;
+    }
+
+    protected function completionModal(): string
+    {
+        return AdminEftCompletionModal::class;
     }
 }

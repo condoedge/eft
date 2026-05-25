@@ -12,6 +12,10 @@
         "php": "^7.3|^8.0",
         "laravel/framework": ">=5.6.0"
     },
+    "suggest": {
+        "barryvdh/laravel-dompdf": "Required to use Condoedge\\Eft\\Http\\Controllers\\EftDocumentsController::pdf()",
+        "maatwebsite/excel": "Required to use Condoedge\\Eft\\Exports\\EftFileLinesExport / EftDocumentsController::excel()"
+    },
     "extra": {
         "laravel": {
             "providers": [

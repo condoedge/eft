@@ -1,13 +1,11 @@
-<?php 
+<?php
 
 return [
-	'user_no' => '0000USERNO', //10 characters
-	'user_shortname' => 'USERSHORTNAME', //15 characters
-	'user_longname' => 'USERLONGNAME', //30 characters
+    'user_no' => env('EFT_USER_NO', '0000USERNO'),
+    'user_shortname' => env('EFT_USER_SHORTNAME', 'USERSHORTNAME'),
+    'user_longname' => env('EFT_USER_LONGNAME', 'USERLONGNAME'),
 
-	'return_institution' => '123', //3 characters
-	'return_transit' => '12345',
-	'return_accountno' => '1234567',
-
-
+    'return_institution' => env('EFT_RETURN_INSTITUTION', '123'),
+    'return_transit' => env('EFT_RETURN_TRANSIT', '12345'),
+    'return_accountno' => env('EFT_RETURN_ACCOUNTNO', '1234567'),
 ];
