@@ -5,7 +5,7 @@ namespace Condoedge\Eft\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Condoedge\Eft\Exports\EftFileLinesExport;
-use App\Models\Eft\EftFile;
+use Condoedge\Eft\Models\EftFile;
 use Maatwebsite\Excel\Facades\Excel;
 
 class EftDocumentsController extends Controller
